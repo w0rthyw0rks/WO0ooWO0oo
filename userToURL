@@ -1,0 +1,18 @@
+on run {input, parameters}
+	
+	set userText to (input)
+	
+	set AppleScript's text item delimiters to " "
+	set userTextItems to text items of userText
+	set AppleScript's text item delimiters to "+"
+	set pasteIntoHTML to userTextItems as string
+	set AppleScript's text item delimiters to {""}
+	
+	set jobSearchURL to "https://www.linkedin.com/jobs/search?keywords=%22" & pasteIntoHTML & "%22&locationId=us%3A0&f_TP=1&orig=FCTD&trk=jobs_jserp_posted_one_day"
+	
+	-- https://www.linkedin.com/jobs/search?keywords=%22
+	-- Application+Security+Engineer
+	-- %22&locationId=us%3A0&f_TP=1&orig=FCTD&trk=jobs_jserp_posted_one_day
+	
+	return jobSearchURL
+end run
