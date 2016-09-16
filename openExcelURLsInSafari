@@ -1,0 +1,15 @@
+on run {input, parameters}
+	
+	tell application "Microsoft Excel"
+		tell active sheet
+			tell used range
+				set rc to count of rows
+			end tell
+			set theList to get value of range ("A1:A" & rc) as list
+			repeat with theItem in theList
+				tell application "Safari" to open location theItem
+			end repeat
+		end tell
+	end tell
+	return input
+end run
