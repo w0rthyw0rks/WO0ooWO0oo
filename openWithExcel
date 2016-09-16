@@ -1,0 +1,11 @@
+on run {input, parameters}
+	
+	(* Your script goes here *)
+	set file_Name to "/Users/.../.../.../jobURLs.txt"
+	
+	tell application "Microsoft Excel"
+		activate
+		open file_Name
+	end tell
+	return input
+end run
