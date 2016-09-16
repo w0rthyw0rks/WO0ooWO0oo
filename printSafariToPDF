@@ -1,0 +1,62 @@
+on run {input, parameters}
+	(* Your script goes here *)
+	tell application "Safari"
+		activate
+		--Variables
+		set winlist to every window
+		set totaltabcount to 0
+		-- Loop through each window to count the number of open tabs
+		repeat with win in winlist
+			try
+				set tabcount to number of tabs in win
+				set totaltabcount to totaltabcount + tabcount
+				-- log "tab count: " & tabcount & " totaltabcount: " & totaltabcount
+			on error errmsg
+				-- Often getting error message like this: 
+				-- "Safari got an error: AppleEvent handler failed."
+				-- log "error message: " & errmsg
+			end try
+		end repeat
+		-- variable totaltabcount has been defined as the number of open tabs
+		
+		delay 1
+		
+		-- Safari window must be open and visible on screen	
+		-- this will print each tab to its own pdf
+		
+		repeat with i from 1 to totaltabcount
+			set theFileName to "newLinkedInJob" & i
+			tell front window
+				set current tab to tab i
+				delay 1
+			end tell
+			
+			tell application "System Events" to tell process "Safari"
+				keystroke "p" using command down -- print
+				delay 1
+				tell front window
+					delay 1
+					tell sheet 1
+						delay 1
+						click menu button "PDF"
+						delay 1
+						click menu item "Save as PDF…" of menu 1 of menu button "PDF"
+					end tell
+				end tell
+				delay 1
+				keystroke theFileName
+				delay 1
+				-- make sure you open safari and save something to the directory you want this file to go to prior to running this script so it will automatically load that directory and save to it.
+				keystroke return -- save
+				delay 1
+				if sheet 1 of sheet 1 of window 1 exists then
+					click button 1 of sheet 1 of sheet 1 of window 1 -- replace
+				end if
+			end tell
+		end repeat
+		
+		close window 1
+	end tell
+	
+	return input
+end run
