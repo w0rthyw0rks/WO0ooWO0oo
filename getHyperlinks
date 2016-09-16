@@ -1,0 +1,20 @@
+on run {input, parameters}
+	
+	set site_url to input as text
+	tell application "Safari"
+		activate
+		open location site_url
+	end tell
+	-- wait until page loaded
+	delay 3
+	-- get number of links
+	set theLinks to {}
+	tell application "Safari" to set num_links to (do JavaScript "document.links.length" in document 1)
+	set linkCounter to num_links - 1
+	-- retrieve the links
+	repeat with i from 0 to linkCounter
+		tell application "Safari" to set end of theLinks to do JavaScript "document.links[" & i & "].href" in document 1
+	end repeat
+	
+	return theLinks
+end run
