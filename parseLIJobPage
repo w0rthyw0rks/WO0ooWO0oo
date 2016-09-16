@@ -1,0 +1,131 @@
+set theFolder to ("/Users/.../.../.../")
+set numberOfFiles to (((do shell script "find " & quoted form of POSIX path of theFolder & " \\! -name '.*' | wc -l") as integer) - 2) / 2
+
+repeat with i from 2 to numberOfFiles
+	
+	try
+		
+		set theFile to ("/Users/.../.../.../newLinkedInJob" & i & ".txt")
+		set theFileContents to read theFile
+		set tid to AppleScript's text item delimiters
+		
+		-- parse out the Job Title
+		set AppleScript's text item delimiters to " Job at "
+		set parsedJobText to text items of theFileContents
+		set almostJobTitle to first text item of parsedJobText
+		set AppleScript's text item delimiters to tid
+		set jobTitle to text 3 through -1 of almostJobTitle
+		
+		-- parse out the Job Location
+		set AppleScript's text item delimiters to "in "
+		set parsedText to text items of theFileContents
+		set almostJobLocation to second text item of parsedText
+		set AppleScript's text item delimiters to tid
+		set jobLocation to text 1 through -10 of almostJobLocation
+		
+		-- print Job Title and Job Location
+		tell application "Microsoft Excel"
+			tell active sheet
+				set value of cell ("B" & (i - 1)) to jobTitle
+				set value of cell ("D" & (i - 1)) to jobLocation
+			end tell
+		end tell
+		
+	end try
+	
+end repeat
+
+set theFile to ("/Users/.../.../.../newLinkedInJob")
+
+extractCompany(theFile, "Job at", " in ")
+to extractCompany(SearchText, startText, endText)
+	
+	set theFolder to ("/Users/.../.../.../")
+	set numberOfFiles to (((do shell script "find " & quoted form of POSIX path of theFolder & " \\! -name '.*' | wc -l") as integer) - 2) / 2
+	
+	repeat with i from 2 to numberOfFiles
+		
+		try
+			
+			set theNamedFile to (SearchText & i & ".txt")
+			set theFileContents to read theNamedFile
+			
+			set tid to AppleScript's text item delimiters
+			set AppleScript's text item delimiters to startText
+			set liste to text items of theFileContents
+			set AppleScript's text item delimiters to endText
+			set extracts to {}
+			repeat with subText in liste
+				if subText contains endText then
+					copy text item 1 of subText to end of extracts
+				end if
+			end repeat
+			set AppleScript's text item delimiters to tid
+			set company to text items of extracts
+			
+			-- print Company Name
+			tell application "Microsoft Excel"
+				tell active sheet
+					set value of cell ("C" & (i - 1)) to company
+				end tell
+			end tell
+			
+		end try
+		
+	end repeat
+end extractCompany
+
+extractJobPostedBy(theFile, "Job posted by" & return, " · ")
+to extractJobPostedBy(SearchText, startText, endText)
+	
+	set theFolder to ("/Users/.../.../.../")
+	set numberOfFiles to (((do shell script "find " & quoted form of POSIX path of theFolder & " \\! -name '.*' | wc -l") as integer) - 2) / 2
+	
+	repeat with i from 2 to numberOfFiles
+		
+		try
+			
+			set theNamedFile to (SearchText & i & ".txt")
+			set theFileContents to read theNamedFile
+			
+			set tid to AppleScript's text item delimiters
+			set AppleScript's text item delimiters to startText
+			set liste to text items of theFileContents
+			set AppleScript's text item delimiters to endText
+			set extracts to {}
+			repeat with subText in liste
+				if subText contains endText then
+					copy text item 1 of subText to end of extracts
+				end if
+			end repeat
+			set AppleScript's text item delimiters to tid
+			set jobPostedBy to text items of extracts
+			
+			tell application "Microsoft Excel"
+				tell active sheet
+					set value of cell ("E" & (i - 1)) to jobPostedBy
+				end tell
+			end tell
+			
+		end try
+		
+	end repeat
+end extractJobPostedBy
+
+--set file_Name to "/Users/.../.../.../BD.xls"
+
+tell application "Microsoft Excel"
+	--	activate
+	--	open file_Name
+	tell active sheet
+		insert into range range "a1:zz1" shift shift down
+		set value of cell "A1" to "Job Link"
+		set value of cell "B1" to "Title"
+		set value of cell "C1" to "Company"
+		set value of cell "D1" to "Location"
+		set value of cell "E1" to "Posted By"
+		save as filename "hammerTime.xls"
+	end tell
+end tell
+
+end
